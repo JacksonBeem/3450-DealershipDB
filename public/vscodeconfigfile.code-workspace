@@ -1,0 +1,14 @@
+{
+  "folders": [
+	{
+		"path": "../../../Users/jbeem/OneDrive/Desktop/VScode"
+	},
+	{
+		"path": ".."
+	}
+],
+  "settings": {
+    "liveServer.settings.multiRootWorkspaceName": "DealershipDB",
+    "terminal.integrated.cwd": "C:\\CSI3150Projects"
+  }
+}

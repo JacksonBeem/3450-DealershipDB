@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sales Records</title>
+</head>
+<body>
+
+<h1>Car Sales Records</h1>
+
+<table border="1">
+    <thead>
+        <tr>
+            <th>Sale ID</th>
+            <th>Car ID</th>
+            <th>Customer ID</th>
+            <th>Sale Price</th>
+            <th>Sale Date</th>
+            <th>Employee ID</th>
+        </tr>
+    </thead>
+    <tbody id="sales-table-body">
+        <!-- Populated by JS -->
+    </tbody>
+</table>
+
+<script>
+    fetch('/api/sales')
+        .then(response => response.json())
+        .then(data => {
+            const tableBody = document.getElementById('sales-table-body');
+            data.forEach(sale => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${sale.sale_id}</td>
+                    <td>${sale.car_id}</td>
+                    <td>${sale.customer_id}</td>
+                    <td>${sale.sale_price}</td>
+                    <td>${sale.sale_date}</td>
+                    <td>${sale.employee_id}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching sales data:', error);
+        });
+</script>
+
+</body>
+</html>

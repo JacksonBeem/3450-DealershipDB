@@ -13,7 +13,7 @@
                 <li><a href="/html/inventory.html">Inventory</a></li>
                 <li><a href="/html/sales.html">Sales</a></li>
                 <li><a href="#contact">Contact</a></li>
-                <li><a href="#about">About Us</a></li>
+                <li><a href="/html/employees.html">Employee Login</a></li>
             </ul>
         </nav>
     </header>
@@ -41,21 +41,7 @@
             <p>Prime Auto Dealers provides quality new and used vehicles with excellent customer service.</p>
         </section>
 
-        <section id="contact">
-            <h2>Contact Us</h2>
-            <form id="contact-form" method="POST" action="/submit-contact">
-                <label for="name">Name:</label><br>
-                <input type="text" id="name" name="name"><br>
-
-                <label for="email">Email:</label><br>
-                <input type="email" id="email" name="email"><br>
-
-                <label for="message">Message:</label><br>
-                <textarea id="message" name="message"></textarea><br>
-
-                <button type="submit">Submit</button>
-            </form>
-        </section>
+        
     </main>
 
     <footer>
@@ -64,37 +50,6 @@
 
 </body>
 <body>
-    <section id="inventory">
-      <h2>Available Vehicles</h2>
-      <button id="loadCars">Load Cars</button>
-      <div id="car-list"></div> <!-- ✅ ID must match JavaScript -->
-    </section>
-  
-    <script>
-      document.getElementById('loadCars').addEventListener('click', () => {
-        fetch('/api/cars')
-          .then(res => res.json())
-          .then(cars => {
-            const list = document.getElementById('car-list'); // ✅ FIXED: was 'cars-list'
-            list.innerHTML = `
-  <div style="display: flex; flex-wrap: wrap; gap: 16px;">
-    ${cars.map(car => `
-      <div style="flex: 1 1 calc(33.333% - 16px); border: 1px solid #ccc; padding: 12px; margin-bottom: 16px; box-sizing: border-box;">
-        <h3 style="margin: 0 0 8px;">${car.car_make} ${car.car_model}</h3>
-        <p style="margin: 4px 0;">Year: ${car.car_year}</p>
-        <p style="margin: 4px 0;">Price: $${car.car_msrp}</p>
-        <p style="margin: 4px 0;">Color: ${car.car_color}</p>
-        <p style="margin: 4px 0;">Availability: ${car.car_availability ? 'Out of Stock' : 'Available'}</p>
-      </div>
-    `).join('')}
-  </div>
-`;
-          })
-          .catch(err => {
-            console.error('Error loading cars:', err);
-          });
-      });
-    </script>
   </body>
   
 </html>

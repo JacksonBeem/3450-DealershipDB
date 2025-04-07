@@ -17,6 +17,8 @@
             <th>Sale Price</th>
             <th>Sale Date</th>
             <th>Employee ID</th>
+            <th>Sale Plus Tax</th>
+            <th>Days Since Sale</th>
         </tr>
     </thead>
     <tbody id="sales-table-body">
@@ -38,6 +40,9 @@
                     <td>${sale.sale_price}</td>
                     <td>${sale.sale_date}</td>
                     <td>${sale.employee_id}</td>
+                    <td>${sale.sale_plus_tax}</td>
+                    <td>${sale.time_since_sale}</td>
+                    
                 `;
                 tableBody.appendChild(row);
             });

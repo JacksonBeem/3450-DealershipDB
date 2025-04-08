@@ -13,7 +13,7 @@ app.use("/js", express.static(path.join(__dirname, "..", "js")));
 const db = mysql.createConnection({
   host: "localhost",
   user: "root",
-  password: "Rangerbuddy1",
+  password: "YOURPASSWORD",
   database: "dealershipdb",
 });
 

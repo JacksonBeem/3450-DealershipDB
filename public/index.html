@@ -9,32 +9,62 @@
     <header>
         <h1>Welcome to Prime Auto Dealers</h1>
         <nav>
-            <ul>
+           <ul>
+                <li><a href="/index.html">Home</a></li>
                 <li><a href="/html/inventory.html">Inventory</a></li>
                 <li><a href="/html/sales.html">Sales</a></li>
-                <li><a href="#contact">Contact</a></li>
+                <li><a href="/html/leases.html">Leases</a></li>
                 <li><a href="/html/employees.html">Employee Login</a></li>
             </ul>
-        </nav>
+        </nav> 
     </header>
 
     <main>
-        <section id="inventory">
-            <h2>Available Cars</h2>
-            <div id="car-list">
-                <!-- Cars will be dynamically loaded here from the database -->
-            </div>
-        </section>
-
+    
         <section id="services">
             <h2>Our Services</h2>
             <ul>
                 <li>Car Sales</li>
-                <li>Trade-Ins</li>
+                <li>Leasing</li>
                 <li>Financing</li>
                 <li>Vehicle Servicing</li>
             </ul>
         </section>
+ 
+        <h2>Meet Our Sales Team</h2>
+
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Sales Person</th>
+                </tr>
+            </thead>
+            <tbody id="employee-table-body">
+                <!-- JavaScript will inject rows here -->
+            </tbody>
+        </table>
+        
+
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                fetch('/api/employees-sales')
+                    .then(response => response.json())
+                    .then(data => {
+                        const tableBody = document.getElementById('employee-table-body');
+                        data.forEach(employee => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td>${employee.sales_person}</td>
+                            
+                            `;
+                            tableBody.appendChild(row);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error fetching employee data:', error);
+                    });
+            });
+        </script>
 
         <section id="about">
             <h2>About Us</h2>

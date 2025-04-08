@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee List</title>
+</head>
+<body>
+    <nav>
+        <ul>
+             <li><a href="/index.html">Home</a></li>
+             <li><a href="/html/inventory.html">Inventory</a></li>
+             <li><a href="/html/sales.html">Sales</a></li>
+             <li><a href="/html/leases.html">Leases</a></li>
+             <li><a href="/html/employees.html">Employee Login</a></li>
+         </ul>
+     </nav> 
+
+    <h1>Employees</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Employee ID</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Position</th>
+                <th>Hourly Rate</th>
+            </tr>
+        </thead>
+        <tbody id="employee-table-body">
+            <!-- Rows will be inserted here by JS -->
+        </tbody>
+    </table>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            fetch('/api/employees')
+                .then(response => response.json())
+                .then(data => {
+                    const tableBody = document.getElementById('employee-table-body');
+                    data.forEach(employee => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${employee.employee_id}</td>
+                            <td>${employee.employee_first_name}</td>
+                            <td>${employee.employee_last_name}</td>
+                            <td>${employee.position}</td>
+                            <td>${employee.hourly_rate}</td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching employee data:', error);
+                });
+        });
+    </script>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Give Employees a Raise</title>
+</head>
+<body>
+
+  <button id="raise-btn">Give All Employees $1 Raise</button>
+  <p id="status"></p>
+
+  <script>
+    document.getElementById("raise-btn").addEventListener("click", () => {
+      fetch('/api/employees-raise', { method: 'GET' })
+        .then(response => {
+          if (!response.ok) throw new Error("Request failed");
+          return response.json();
+        })
+        .then(data => {
+          document.getElementById("status").innerText = "✅ Raise applied successfully!";
+          console.log("Update results:", data);
+        })
+        .catch(error => {
+          document.getElementById("status").innerText = "❌ Failed to apply raise.";
+          console.error("Error:", error);
+        });
+    });
+  </script>
+
+</body>
+</html>
+
+
+
+</body>
+</html>

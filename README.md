@@ -1,7 +1,8 @@
 ## Libraries
-Node - if not yet installed Download and install from https://nodejs.org
-Express - npm install express
-SQL - npm install mysql
+
+##### Node - if not yet installed Download and install from https://nodejs.org
+##### Express - npm install express
+##### SQL - npm install mysql
 
 #### After libraries are installed initialize node
 npm init -y

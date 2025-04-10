@@ -48,7 +48,7 @@ app.get("/api/sales", (req, res) => {
 
   db.query(query, (err, results) => {
     if (err) {
-      console.error("❌ DB query failed:", err);
+      console.error("DB query failed:", err);
       return res.status(500).json({ error: "DB query failed" });
     }
     res.json(results);
@@ -208,5 +208,5 @@ app.get("/", (req, res) => {
 
 // Start server
 app.listen(3000, () => {
-  console.log("🚗 Server running at http://localhost:3000");
+  console.log("Server running at http://localhost:3000");
 });

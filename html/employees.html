@@ -56,6 +56,43 @@
         });
     </script>
 
+<h1>Top Selling Employees</h1>
+<table border="1">
+    <thead>
+        <tr>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Total Sales</th>
+        </tr>
+    </thead>
+    <tbody id="top-employee-table-body">
+        <!-- Rows will be inserted here by JS -->
+    </tbody>
+</table>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        fetch('/api/top-employees')
+            .then(response => response.json())
+            .then(data => {
+                const tableBody = document.getElementById('top-employee-table-body');
+                data.forEach(employee => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${employee.employee_first_name}</td>
+                        <td>${employee.employee_last_name}</td>
+                        <td>${employee.total_sales}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching top employee data:', error);
+            });
+    });
+</script>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>

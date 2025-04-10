@@ -52,8 +52,6 @@
     });
 </script>
 
-
-
 <script>
     fetch('/api/sales')
         .then(response => response.json())
@@ -81,5 +79,60 @@
         });
 </script>
 
+<section id="car-sales-section">
+    <h2>Car Sales by Customer</h2>
+    <button id="toggleCarSales">Show Car Sales</button>
+    <div id="car-sales-table" style="display: none; margin-top: 16px;"></div>
+  </section>
+  
+  <script>
+    let carSalesVisible = false;
+  
+    document.getElementById('toggleCarSales').addEventListener('click', () => {
+      const tableDiv = document.getElementById('car-sales-table');
+  
+      if (carSalesVisible) {
+        tableDiv.style.display = 'none';
+        tableDiv.innerHTML = '';
+        document.getElementById('toggleCarSales').innerText = 'Show Car Sales';
+        carSalesVisible = false;
+      } else {
+        fetch('/api/sales-on-customers')
+          .then(res => res.json())
+          .then(data => {
+            const tableHTML = `
+              <table border="1" cellpadding="8" cellspacing="0">
+                <thead>
+                  <tr>
+                    <th>Make</th>
+                    <th>Model</th>
+                    <th>Customer First Name</th>
+                    <th>Customer Last Name</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${data.map(row => `
+                    <tr>
+                      <td>${row.car_make}</td>
+                      <td>${row.car_model}</td>
+                      <td>${row.customer_first_name}</td>
+                      <td>${row.customer_last_name}</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            `;
+            tableDiv.innerHTML = tableHTML;
+            tableDiv.style.display = 'block';
+            document.getElementById('toggleCarSales').innerText = 'Hide Car Sales';
+            carSalesVisible = true;
+          })
+          .catch(err => {
+            console.error('Error loading car sales data:', err);
+          });
+      }
+    });
+  </script>
+  
 </body>
 </html>

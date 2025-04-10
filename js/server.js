@@ -3,6 +3,9 @@ const mysql = require("mysql2");
 const path = require("path");
 const app = express();
 
+app.use(express.json());
+
+
 // Serve static files
 app.use(express.static(path.join(__dirname, "..", "public")));
 app.use("/html", express.static(path.join(__dirname, "..", "html")));
@@ -59,27 +62,43 @@ app.get("/api/sales-total", (req, res) => {
   });
 });
 
-
-//CUSTOMERS API
-
-app.get("/api/customers", (req, res) => {
-  db.query("", (err, results) => {
-    if (err) return res.status(500).json({ error: "DB query failed" });
-    res.json(results);
-  });
+app.get("/api/sales-on-customers", (req, res) => {
+  db.query(
+    `SELECT c.car_make, c.car_model, cu.customer_first_name, cu.customer_last_name
+     FROM sales s
+     INNER JOIN cars c ON s.car_id = c.car_id
+     INNER JOIN customers cu ON s.customer_id = cu.customer_id;`,
+    (err, results) => {
+      if (err) return res.status(500).json({ error: "DB query failed" });
+      res.json(results);
+    }
+  );
 });
 
 
+//CUSTOMERS API
 
+//inserts new customers
+app.post('/api/customers', (req, res) => {
+  const { first_name, last_name, email, phone } = req.body;
 
+  const query = `
+      INSERT INTO customers (customer_first_name, customer_last_name, customer_email, customer_phone, current_car, current_lease)
+      VALUES (?, ?, ?, ?, NULL, NULL)
+  `;
 
-
-
-
-
+  db.query(query, [first_name, last_name, email, phone], (err, results) => {
+      if (err) {
+          console.error('DB INSERT ERROR:', err);
+          return res.status(500).json({ error: 'Insert failed' });
+      }
+      res.json({ message: 'Customer added successfully', customer_id: results.insertId });
+  });
+});
 
 //EMPLOYEES API
 
+//all employees
 app.get("/api/employees", (req, res) => {
   db.query("SELECT * FROM employees;", (err, results) => {
     if (err) return res.status(500).json({ error: "DB query failed" });
@@ -87,7 +106,21 @@ app.get("/api/employees", (req, res) => {
   });
 });
 
+//selects managers 
+app.get("/api/employees-managers", (req, res) => {
+  const query = `
+    SELECT CONCAT_WS(". ", employee_first_name, LEFT(employee_last_name, 1)) AS manager_name
+    FROM employees
+    WHERE LOCATE("manager", position) > 0
+  `;
 
+  db.query(query, (err, results) => {
+    if (err) return res.status(500).json({ error: "DB query failed" });
+    res.json(results);
+  });
+});
+
+//sales employees
 app.get("/api/employees-sales", (req, res) => {
   console.log("Route /api/employees hit");
 
@@ -114,7 +147,7 @@ app.get("/api/employees-sales", (req, res) => {
   });
 });
 
-
+//gives all employees $1 raises
 app.get("/api/employees-raise", (req, res) => {
   db.query("UPDATE employees SET hourly_rate = hourly_rate + 1;", (err, results) => {
     if (err) return res.status(500).json({ error: "DB query failed" });
@@ -122,17 +155,50 @@ app.get("/api/employees-raise", (req, res) => {
   });
 });
 
+// Shows employees that sold more than 3 cars
+app.get("/api/top-employees", (req, res) => {
+  const query = `
+    SELECT e.employee_first_name, e.employee_last_name, COUNT(*) AS total_sales
+    FROM sales s
+    JOIN employees e ON s.employee_id = e.employee_id
+    GROUP BY s.employee_id
+    HAVING COUNT(*) > 3;
+  `;
 
-
-  
-
-//LEASE API
-
-app.get("/api/leases", (req, res) => {
-  db.query("", (err, results) => {
+  db.query(query, (err, results) => {
     if (err) return res.status(500).json({ error: "DB query failed" });
     res.json(results);
   });
+});
+
+//LEASE API
+
+//all lease data
+app.get("/api/leases", (req, res) => {
+  db.query("SELECT * FROM leases;", (err, results) => {
+    if (err) return res.status(500).json({ error: "DB query failed" });
+    res.json(results);
+  });
+});
+//deletes all leases that end on current day
+app.delete("/api/leases-end", (req, res) => {
+  db.query("DELETE FROM leases WHERE lease_end_date = CURDATE();", (err, results) => {
+    if (err) return res.status(500).json({ error: "DB query failed" });
+    res.json(results);
+  });
+});
+
+//shows customers and their leases
+app.get("/api/leases-customers", (req, res) => {
+  db.query(
+    `SELECT cu.customer_first_name, cu.customer_last_name, l.lease_id
+     FROM customers cu
+     LEFT JOIN leases l ON cu.customer_id = l.customer_id WHERE lease_id IS NOT NULL;`,
+    (err, results) => {
+      if (err) return res.status(500).json({ error: "DB query failed" });
+      res.json(results);
+    }
+  );
 });
 
 // Root route

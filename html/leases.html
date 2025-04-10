@@ -18,21 +18,144 @@
 
     <h1>Leases</h1>
 
-    <table>
-        <thead>
-            <tr>
-                <th>Lease ID</th>
-                <th>Car ID</th>
-                <th>Customer ID</th>
-                <th>Start Date</th>
-                <th>End Date</th>
-                <th>Monthly Rate</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Lease data will go here -->
-        </tbody>
-    </table>
+  
+    <section id="lease-section">
+      <h2>Active Lease Agreements</h2>
+      <button id="loadLeases">Show Leases</button>
+      <div id="lease-table" style="display: none; margin-top: 16px;"></div>
+    </section>
+    
+    <script>
+      let leasesVisible = false;
+    
+      document.getElementById('loadLeases').addEventListener('click', () => {
+        const tableContainer = document.getElementById('lease-table');
+    
+        if (leasesVisible) {
+          tableContainer.style.display = 'none';
+          tableContainer.innerHTML = '';
+          document.getElementById('loadLeases').innerText = 'Show Leases';
+          leasesVisible = false;
+        } else {
+          fetch('/api/leases')
+            .then(res => res.json())
+            .then(leases => {
+              if (!Array.isArray(leases)) {
+                throw new Error('Invalid data format');
+              }
+    
+              const tableHTML = `
+                <table border="1" cellpadding="8" cellspacing="0">
+                  <thead>
+                    <tr>
+                      <th>Lease ID</th>
+                      <th>Car ID</th>
+                      <th>Customer ID</th>
+                      <th>Lease Start Date</th>
+                      <th>Lease End Date</th>
+                      <th>Monthly Rate</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${leases.map(lease => `
+                      <tr>
+                        <td>${lease.lease_id}</td>
+                        <td>${lease.car_id}</td>
+                        <td>${lease.customer_id}</td>
+                        <td>${lease.lease_start_date}</td>
+                        <td>${lease.lease_end_date}</td>
+                        <td>$${lease.monthly_rate}</td>
+                      </tr>
+                    `).join('')}
+                  </tbody>
+                </table>
+              `;
+              tableContainer.innerHTML = tableHTML;
+              tableContainer.style.display = 'block';
+              document.getElementById('loadLeases').innerText = 'Hide Leases';
+              leasesVisible = true;
+            })
+            .catch(err => {
+              console.error('Error loading lease data:', err);
+              tableContainer.innerHTML = '<p style="color:red;">Failed to load lease data.</p>';
+              tableContainer.style.display = 'block';
+            });
+        }
+      });
+    </script>
+    
+    <section id="customer-lease-section">
+      <h2>Customer Lease Records</h2>
+      <button id="toggleCustomerLeases">Show Leases</button>
+      <div id="customer-lease-table" style="display: none; margin-top: 16px;"></div>
+    </section>
+    
+    <script>
+      let customerLeasesVisible = false;
+    
+      document.getElementById('toggleCustomerLeases').addEventListener('click', () => {
+        const tableDiv = document.getElementById('customer-lease-table');
+    
+        if (customerLeasesVisible) {
+          tableDiv.style.display = 'none';
+          tableDiv.innerHTML = '';
+          document.getElementById('toggleCustomerLeases').innerText = 'Show Leases';
+          customerLeasesVisible = false;
+        } else {
+          fetch('/api/leases-customers')
+            .then(res => res.json())
+            .then(data => {
+              const tableHTML = `
+                <table border="1" cellpadding="8" cellspacing="0">
+                  <thead>
+                    <tr>
+                      <th>Customer First Name</th>
+                      <th>Customer Last Name</th>
+                      <th>Lease ID</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${data.map(row => `
+                      <tr>
+                        <td>${row.customer_first_name || 'N/A'}</td>
+                        <td>${row.customer_last_name || 'N/A'}</td>
+                        <td>${row.lease_id || 'N/A'}</td>
+                      </tr>
+                    `).join('')}
+                  </tbody>
+                </table>
+              `;
+              tableDiv.innerHTML = tableHTML;
+              tableDiv.style.display = 'block';
+              document.getElementById('toggleCustomerLeases').innerText = 'Hide Leases';
+              customerLeasesVisible = true;
+            })
+            .catch(err => {
+              console.error('Error loading lease data:', err);
+            });
+        }
+      });
+    </script>
+    
+    <section id="lease-actions">
+      <h2>Lease Management</h2>
+      <button id="deleteLeases">Delete Leases Ending Today</button>
+      <div id="lease-delete-result"></div>
+    </section>
+    
+    <script>
+      document.getElementById('deleteLeases').addEventListener('click', () => {
+        fetch('/api/leases-end', { method: 'DELETE' })
+          .then(res => res.json())
+          .then(result => {
+            document.getElementById('lease-delete-result').innerText =
+              `(${result.affectedRows} rows affected)`;
+          })
+          .catch(err => {
+            console.error('Error deleting leases:', err);
+          });
+      });
+    </script>
     
 </body>
 </html>
